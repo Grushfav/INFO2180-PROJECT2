@@ -1,14 +1,103 @@
-<?php header('Location: login.php');
- exit(); 
+<?php
+require_once 'config.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Dolphin CRM - Redirecting...</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dolphin CRM</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <p>If you are not redirected automatically, <a href="login.php">click here</a>.</p>
+    <div class="app-wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-header">
+                <h1>🐬 Dolphin CRM</h1>
+            </div>
+            <ul>
+                <li><a href="#" onclick="loadPage('home'); return false;" class="nav-link active" data-page="home">🏠 Home</a></li>
+                <li><a href="#" onclick="loadPage('contacts'); return false;" class="nav-link" data-page="contacts">📋 New Contact</a></li>
+                <li><a href="#" onclick="loadPage('users'); return false;" class="nav-link" data-page="users">👥 Users</a></li>
+                <li><a href="logout.php" class="nav-link logout">🚪 Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div id="content-area" class="page-wrapper">
+                <!-- Dynamic content loads here -->
+                <p style="text-align:center; color:#999; padding:40px;">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load home page on page load
+            loadPage('home');
+
+            // Handle back/forward browser buttons
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.page) {
+                    loadPageContent(event.state.page, false);
+                }
+            });
+        });
+
+        function loadPage(page) {
+            // Update active nav link
+            $('.nav-link').removeClass('active');
+            $('[data-page="' + page + '"]').addClass('active');
+
+            // Load content
+            loadPageContent(page, true);
+        }
+
+        function loadPageContent(page, pushState = true) {
+            let contentUrl = '';
+            
+            // Map pages to their PHP content files
+            switch(page) {
+                case 'home':
+                    contentUrl = 'pages/home-content.php';
+                    break;
+                case 'contacts':
+                    contentUrl = 'pages/contacts-content.php';
+                    break;
+                case 'users':
+                    contentUrl = 'pages/users-content.php';
+                    break;
+                default:
+                    contentUrl = 'pages/home-content.php';
+            }
+
+            $.ajax({
+                url: contentUrl,
+                method: 'GET',
+                dataType: 'html',
+                success: function(html) {
+                    $('#content-area').html(html);
+                    
+                    // Push state to browser history for back button support
+                    if (pushState) {
+                        window.history.pushState({page: page}, page, '#' + page);
+                    }
+                },
+                error: function(xhr) {
+                    $('#content-area').html('<div style="background:#f8d7da; color:#721c24; padding:20px; border-radius:4px; margin:20px;">Error loading page content</div>');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
 

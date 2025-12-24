@@ -3,7 +3,7 @@ require_once 'config.php';
 
 // Check if user is already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+    header('Location: index.html');
     exit();
 }
 
@@ -24,14 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             
-            // Verify password (for now, direct comparison; in production, use password_hash)
-            if ($password === $user['password']) {
+            // Verify password - handle both hashed and plain text for transition
+            $passwordValid = false;
+            if (password_verify($password, $user['password'])) {
+                // Password is hashed (correct way)
+                $passwordValid = true;
+            } elseif ($password === $user['password']) {
+                // Password is plain text (for legacy/initial setup)
+                $passwordValid = true;
+            }
+            
+            if ($passwordValid) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['firstname'] . ' ' . $user['lastname'];
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_role'] = $user['role'];
                 
-                header('Location: dashboard.php');
+                header('Location: index.html');
                 exit();
             } else {
                 $_SESSION['error'] = 'Invalid email or password.';
