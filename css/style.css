@@ -383,6 +383,14 @@ body {
 .form-group textarea:focus {
     outline: none;
     border-color: #3498db;
+}
+
+.password-hint {
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: -12px;
+    margin-bottom: 16px;
+    padding: 0 0 0 12px;
     background-color: #fafbfc;
     box-shadow: 0 0 8px rgba(52, 152, 219, 0.15);
 }
@@ -627,8 +635,229 @@ body {
         align-items: flex-start;
     }
 
+/* ========== RESPONSIVE FORM ========== */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
     .page-header button {
         margin-top: 10px;
     }
+}
+
+/* ========== DASHBOARD HOME PAGE ========== */
+.dashboard-card-container {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card {
+    width: 100%;
+}
+
+.dashboard-card h3 {
+    color: #202124;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dashboard-card h4 {
+    color: #202124;
+    margin-top: 30px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.welcome-text {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.role-label {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.role-label.admin {
+    background: #e3f2fd;
+    color: #1f71ed;
+}
+
+.role-label.member {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.account-info-box {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #1f71ed;
+    margin-bottom: 30px;
+}
+
+.account-info-box h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.account-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-info-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.account-info-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.getting-started-title {
+    color: #202124;
+    margin-top: 30px;
+}
+
+.getting-started-list {
+    color: #666;
+    padding-left: 20px;
+}
+
+.getting-started-list li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.getting-started-list li:last-child {
+    margin-bottom: 0;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.action-cell {
+    text-align: right;
+}
+
+.loading {
+    padding: 20px !important;
+    color: #999 !important;
+}
+
+.empty {
+    padding: 20px !important;
+    color: #999 !important;
+}
+
+.loading-message {
+    text-align: center;
+    color: #9aa0a6;
+    padding: 40px;
+}
+
+.page-load-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.error {
+    padding: 20px !important;
+    color: #d32f2f !important;
+}
+
+/* ========== ADD FORM CONTAINERS ========== */
+.add-contact-form-container,
+.add-user-form-container {
+    margin-bottom: 30px;
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.add-contact-form-container.hidden,
+.add-user-form-container.hidden,
+/* also target by id and stronger selector to avoid accidental overrides */
+#add-user-form-container.hidden,
+#add-contact-form-container.hidden,
+.add-contact-form-container.hidden,
+.add-user-form-container.hidden {
+    display: none !important;
+}
+
+.add-contact-form-container h3,
+.add-user-form-container h3 {
+    margin-top: 0;
+    color: #202124;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.add-user-form-container small {
+    color: #999;
+    display: block;
+    margin-top: 5px;
+}
+
+/* ========== CONTAINERS ========== */
+.contacts-container,
+.users-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* ========== BUTTON VARIANTS ========== */
+.btn-delete {
+    background-color: #d32f2f;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #b71c1c;
+    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
 }
 

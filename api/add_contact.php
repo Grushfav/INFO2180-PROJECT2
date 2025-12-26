@@ -26,7 +26,12 @@ $type = $_POST['type'] ?? '';
 // Validate required fields
 if (empty($firstname) || empty($lastname) || empty($email) || empty($type)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'First name, last name, email, and type are required']);
+    $missing = [];
+    if (empty($firstname)) $missing[] = 'First name';
+    if (empty($lastname)) $missing[] = 'Last name';
+    if (empty($email)) $missing[] = 'Email';
+    if (empty($type)) $missing[] = 'Type';
+    echo json_encode(['success' => false, 'error' => 'Required fields missing: ' . implode(', ', $missing)]);
     exit;
 }
 
@@ -38,9 +43,9 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Validate type
-if (!in_array($type, ['Client', 'Lead'])) {
+if (!in_array($type, ['Sales Lead', 'Support'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Invalid contact type']);
+    echo json_encode(['success' => false, 'error' => 'Invalid contact type. Must be "Sales Lead" or "Support". Received: ' . htmlspecialchars($type)]);
     exit;
 }
 
@@ -70,3 +75,4 @@ if ($stmt->execute()) {
 }
 
 $stmt->close();
+?>

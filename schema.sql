@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Contacts table: stores client information
-CREATE TABLE IF NOT EXISTS `Contacts` (
+CREATE TABLE IF NOT EXISTS `contacts` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
     `title` VARCHAR(10),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Notes table: stores comments linked to contacts
-CREATE TABLE IF NOT EXISTS `Notes` (
+CREATE TABLE IF NOT EXISTS `notes` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `contact_id` INT NOT NULL,
     `comment` TEXT NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `Notes` (
     PRIMARY KEY (`id`),
     KEY `idx_notes_contact_id` (`contact_id`),
     KEY `idx_notes_user_id` (`user_id`),
-    CONSTRAINT `fk_notes_contact` FOREIGN KEY (`contact_id`) REFERENCES `Contacts`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_notes_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_notes_user_id` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

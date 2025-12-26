@@ -23,8 +23,8 @@ if (!isset($_SESSION['user_id'])) {
                 <h1>🐬 Dolphin CRM</h1>
             </div>
             <ul>
-                <li><a href="#" onclick="loadPage('home'); return false;" class="nav-link active" data-page="home">🏠 Home</a></li>
-                <li><a href="#" onclick="loadPage('contacts'); return false;" class="nav-link" data-page="contacts">📋 New Contact</a></li>
+                <li><a href="#" onclick="loadPage('home'); return false;" class="nav-link active" data-page="home">📊 Dashboard</a></li>
+                <li><a href="#" onclick="loadPage('contacts'); return false;" class="nav-link" data-page="contacts">📋 Contacts</a></li>
                 <li><a href="#" onclick="loadPage('users'); return false;" class="nav-link" data-page="users">👥 Users</a></li>
                 <li><a href="logout.php" class="nav-link logout">🚪 Logout</a></li>
             </ul>
@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="main-content">
             <div id="content-area" class="page-wrapper">
                 <!-- Dynamic content loads here -->
-                <p style="text-align:center; color:#999; padding:40px;">Loading...</p>
+                <p class="loading-message">Loading...</p>
             </div>
         </div>
     </div>
@@ -93,7 +93,7 @@ if (!isset($_SESSION['user_id'])) {
                     }
                 },
                 error: function(xhr) {
-                    $('#content-area').html('<div style="background:#f8d7da; color:#721c24; padding:20px; border-radius:4px; margin:20px;">Error loading page content</div>');
+                    $('#content-area').html('<div class="page-load-error">Error loading page content</div>');
                 }
             });
         }

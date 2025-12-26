@@ -14,73 +14,73 @@ if ($_SESSION['user_role'] !== 'Admin') {
 
 <div class="page-header">
     <h2>Manage Users</h2>
-    <button class="btn-primary" onclick="showAddUserForm()" style="float:right;">+ Add User</button>
+    <button class="btn-primary" onclick="showAddUserForm()">+ Add User</button>
 </div>
 
-<div style="clear:both; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-top: 20px;">
-    
-    <div id="add-user-form-container" style="display:none; margin-bottom: 30px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-        <h3>Add New User</h3>
-        <form id="add-user-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>First Name *</label>
-                    <input type="text" name="firstname" placeholder="First Name" required>
-                </div>
-                <div class="form-group">
-                    <label>Last Name *</label>
-                    <input type="text" name="lastname" placeholder="Last Name" required>
-                </div>
+<div class="add-user-form-container hidden" id="add-user-form-container">
+    <h3>Add New User</h3>
+    <form id="add-user-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>First Name *</label>
+                <input type="text" name="firstname" placeholder="First Name" required>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" name="email" placeholder="Email address" required>
-                </div>
-                <div class="form-group">
-                    <label>Role *</label>
-                    <select name="role" required>
-                        <option value="">-- Select Role --</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Member">Member</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label>Last Name *</label>
+                <input type="text" name="lastname" placeholder="Last Name" required>
             </div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" name="password" placeholder="Min 8 chars (upper, lower, digit)" required>
-                    <small style="color: #999; display: block; margin-top: 5px;">Minimum 8 characters with at least 1 uppercase letter, 1 lowercase letter, and 1 digit</small>
-                </div>
-                <div class="form-group">
-                    <label>Confirm Password *</label>
-                    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-                </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" placeholder="Email address" required>
             </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">Add User</button>
-                <button type="button" class="btn-secondary" onclick="hideAddUserForm()">Cancel</button>
+            <div class="form-group">
+                <label>Role *</label>
+                <select name="role" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Member">Member</option>
+                </select>
             </div>
-        </form>
-        <div id="add-user-message" class="form-message" style="display:none;"></div>
-    </div>
+        </div>
 
-    <table class="users-table" style="width: 100%; border-collapse: collapse;">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Password *</label>
+                <input type="password" name="password" placeholder="Min 8 chars (upper, lower, digit)" required>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password *</label>
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            </div>
+        </div>
+
+        <div class="password-hint">Minimum 8 characters with at least 1 uppercase letter, 1 lowercase letter, and 1 digit</div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Add User</button>
+            <button type="button" class="btn-secondary" onclick="hideAddUserForm()">Cancel</button>
+        </div>
+    </form>
+    <div id="add-user-message" class="form-message hidden"></div>
+</div>
+
+<div class="users-container">
+    <table class="users-table">
         <thead>
-            <tr style="border-bottom: 2px solid #ddd;">
-                <th style="text-align: left; padding: 12px; font-weight: bold;">Name</th>
-                <th style="text-align: left; padding: 12px; font-weight: bold;">Email</th>
-                <th style="text-align: left; padding: 12px; font-weight: bold;">Role</th>
-                <th style="text-align: left; padding: 12px; font-weight: bold;">Created</th>
-                <th style="text-align: left; padding: 12px; font-weight: bold;">Actions</th>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th></th>
             </tr>
         </thead>
         <tbody id="users-list">
             <tr>
-                <td colspan="5" style="text-align: center; padding: 20px; color: #999;">Loading users...</td>
+                <td colspan="5" class="text-center loading">Loading users...</td>
             </tr>
         </tbody>
     </table>
@@ -88,14 +88,18 @@ if ($_SESSION['user_role'] !== 'Admin') {
 
 <script>
 function showAddUserForm() {
-    $('#add-user-form-container').slideDown();
+    // ensure any running animations are stopped, then show
+    $('#add-user-form-container').stop(true, true).removeClass('hidden').slideDown();
     $('html, body').animate({scrollTop: 0}, 'slow');
 }
 
 function hideAddUserForm() {
-    $('#add-user-form-container').slideUp();
+    // stop any animation and hide, then add hidden class
+    $('#add-user-form-container').stop(true, true).slideUp(function() {
+        $(this).addClass('hidden');
+    });
     $('#add-user-form')[0].reset();
-    $('#add-user-message').hide();
+    $('#add-user-message').addClass('hidden');
 }
 
 function loadUsers() {
@@ -107,25 +111,24 @@ function loadUsers() {
             if (data.success && data.users.length > 0) {
                 let html = '';
                 data.users.forEach(function(user) {
-                    const roleColor = user.role === 'Admin' ? '#0277bd' : '#e65100';
-                    const roleLabel = user.role === 'Admin' ? 'Admin' : 'Member';
+                    const roleClass = user.role === 'Admin' ? 'role-badge admin' : 'role-badge member';
                     const createdDate = new Date(user.created_at).toLocaleDateString();
                     
-                    html += '<tr style="border-bottom: 1px solid #eee;">';
-                    html += '<td style="padding: 12px;">' + escapeHtml(user.fullname) + '</td>';
-                    html += '<td style="padding: 12px;">' + escapeHtml(user.email) + '</td>';
-                    html += '<td style="padding: 12px;"><span style="background: ' + roleColor + '; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold;">' + roleLabel + '</span></td>';
-                    html += '<td style="padding: 12px;">' + createdDate + '</td>';
-                    html += '<td style="padding: 12px;"><button class="btn-small" onclick="deleteUser(' + user.id + ')" style="background: #d32f2f; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">Delete</button></td>';
+                    html += '<tr>';
+                    html += '<td>' + escapeHtml(user.fullname) + '</td>';
+                    html += '<td>' + escapeHtml(user.email) + '</td>';
+                    html += '<td><span class="' + roleClass + '">' + user.role + '</span></td>';
+                    html += '<td>' + createdDate + '</td>';
+                    html += '<td class="action-cell"><button class="btn-delete" onclick="deleteUser(' + user.id + ')">Delete</button></td>';
                     html += '</tr>';
                 });
                 $('#users-list').html(html);
             } else {
-                $('#users-list').html('<tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">No users found</td></tr>');
+                $('#users-list').html('<tr><td colspan="5" class="text-center empty">No users found</td></tr>');
             }
         },
         error: function() {
-            $('#users-list').html('<tr><td colspan="5" style="text-align: center; padding: 20px; color: #d32f2f;">Error loading users</td></tr>');
+            $('#users-list').html('<tr><td colspan="5" class="text-center error">Error loading users</td></tr>');
         }
     });
 }
@@ -163,23 +166,45 @@ function escapeHtml(text) {
 }
 
 $(document).ready(function() {
+    // enforce hidden state on load to avoid race conditions
+    $('#add-user-form-container').addClass('hidden').hide();
     loadUsers();
 
     $('#add-user-form').submit(function(e) {
         e.preventDefault();
 
+        const password = $('input[name="password"]').val();
+        const confirmPassword = $('input[name="confirm_password"]').val();
+        const firstname = $('input[name="firstname"]').val();
+        const lastname = $('input[name="lastname"]').val();
+        const email = $('input[name="email"]').val();
+        const role = $('select[name="role"]').val();
+
+        // Validate required fields
+        if (!firstname || !lastname || !email || !role) {
+            $('#add-user-message').html('All fields are required').removeClass('success').addClass('error').removeClass('hidden');
+            return;
+        }
+
         // Validate passwords match
-        if ($('input[name="password"]').val() !== $('input[name="confirm_password"]').val()) {
-            $('#add-user-message').html('Passwords do not match').removeClass('success').addClass('error').show();
+        if (password !== confirmPassword) {
+            $('#add-user-message').html('Passwords do not match').removeClass('success').addClass('error').removeClass('hidden');
+            return;
+        }
+
+        // Validate password strength
+        const pwPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
+        if (!pwPattern.test(password)) {
+            $('#add-user-message').html('Password must be at least 8 characters and include uppercase, lowercase, and a number').removeClass('success').addClass('error').removeClass('hidden');
             return;
         }
 
         const formData = {
-            firstname: $('input[name="firstname"]').val(),
-            lastname: $('input[name="lastname"]').val(),
-            email: $('input[name="email"]').val(),
-            role: $('select[name="role"]').val(),
-            password: $('input[name="password"]').val()
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            role: role,
+            password: password
         };
 
         $.ajax({
@@ -187,21 +212,32 @@ $(document).ready(function() {
             url: 'api/add_user.php',
             data: JSON.stringify(formData),
             contentType: 'application/json',
+            dataType: 'json',
             success: function(response) {
                 $('#add-user-form')[0].reset();
-                $('#add-user-message').html('User added successfully!').removeClass('error').addClass('success').show();
+                $('#add-user-message').html('User added successfully!').removeClass('error').addClass('success').removeClass('hidden');
                 loadUsers();
                 setTimeout(function() {
                     hideAddUserForm();
                 }, 2000);
             },
             error: function(xhr) {
+                let errorMessage = 'Error adding user';
+                console.log('XHR Status:', xhr.status);
+                console.log('XHR Response Text:', xhr.responseText);
                 try {
                     const response = JSON.parse(xhr.responseText);
-                    $('#add-user-message').html(response.error).removeClass('success').addClass('error').show();
+                    if (response.error) {
+                        errorMessage = response.error;
+                    }
                 } catch(e) {
-                    $('#add-user-message').html('Error adding user').removeClass('success').addClass('error').show();
+                    // If JSON parse fails, try to get status text
+                    if (xhr.status && xhr.statusText) {
+                        errorMessage = xhr.status + ': ' + xhr.statusText;
+                    }
                 }
+                $('#add-user-message').html(errorMessage).removeClass('success').addClass('error').removeClass('hidden');
+                console.error('Add user error:', errorMessage, xhr);
             }
         });
     });

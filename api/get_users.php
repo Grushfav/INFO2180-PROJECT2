@@ -32,5 +32,6 @@ while ($row = $result->fetch_assoc()) {
     $users[] = $row;
 }
 
-echo json_encode(['success' => true, 'data' => $users]);
+// Return under the key 'users' to match frontend expectations
+echo json_encode(['success' => true, 'users' => $users]);
 ?>

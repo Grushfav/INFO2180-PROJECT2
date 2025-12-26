@@ -30,6 +30,19 @@ $email     = isset($_POST['email']) ? trim($_POST['email']) : '';
 $password  = isset($_POST['password']) ? $_POST['password'] : '';
 $role      = isset($_POST['role']) ? trim($_POST['role']) : 'Member';
 
+// Handle JSON input
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+if (strpos($contentType, 'application/json') !== false) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if ($input) {
+        $firstname = isset($input['firstname']) ? trim($input['firstname']) : $firstname;
+        $lastname = isset($input['lastname']) ? trim($input['lastname']) : $lastname;
+        $email = isset($input['email']) ? trim($input['email']) : $email;
+        $password = isset($input['password']) ? $input['password'] : $password;
+        $role = isset($input['role']) ? trim($input['role']) : $role;
+    }
+}
+
 $errors = [];
 if ($firstname === '') $errors[] = 'First name is required';
 if ($lastname === '')  $errors[] = 'Last name is required';
