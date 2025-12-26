@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `notes` (
 
 
 -- Insert an admin user (example)
+---The password below is 'adminpass' hashed using bcrypt-  password: password123
 INSERT INTO `Users` (`firstname`, `lastname`, `email`, `password`, `role`)
-VALUES ('Admin', 'User', 'admin@project2.com', 'password123', 'Admin')
+VALUES ('Admin', 'User', 'admin@project2.com', '$2y$10$yQ1ktDd.16eHW.uTDuxcGOcDzD40gdAHirPwxk9Lefa.7cNquOOAG', 'Admin')
 ON DUPLICATE KEY UPDATE `email` = `email`;

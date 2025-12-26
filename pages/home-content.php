@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <div class="page-header">
     <h2>Dashboard</h2>
+    <h3>Welcome back <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'User'); ?>!</h3>
     <button class="btn-primary" onclick="showAddContactForm()">+ Add Contact</button>
 </div>
 

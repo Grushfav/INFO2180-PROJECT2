@@ -12,13 +12,6 @@ if (!isset($_SESSION['user_id'])) {
     <button id="toggle-view-btn" class="btn-primary" onclick="toggleContactsView()">View Contacts List</button>
 </div>
 
-<!-- <div class="filter-section">
-    <span class="filter-label">Filter by:</span>
-    <button class="filter-btn active" onclick="filterContacts('all')">All</button>
-    <button class="filter-btn" onclick="filterContacts('sales')">Sales Leads</button>
-    <button class="filter-btn" onclick="filterContacts('support')">Support</button>
-    <button class="filter-btn" onclick="filterContacts('assigned')">Assigned to me</button>
-</div> -->
 
 <div id="add-contact-form-container" class="add-contact-form-container">
     <h3>Add New Contact</h3>

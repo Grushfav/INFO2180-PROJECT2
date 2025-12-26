@@ -2,8 +2,8 @@
 // Database configuration
 // XAMPP Default: root user with empty password
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASSWORD', '');
+define('DB_USER', 'admin_project2');
+define('DB_PASSWORD', 'Password123');
 define('DB_NAME', 'dolphin_crm');
 
 // Create connection
