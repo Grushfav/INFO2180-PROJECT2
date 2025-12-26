@@ -132,6 +132,7 @@ function loadContacts() {
                     filteredContacts = data.contacts.filter(function(contact) {
                         if (currentFilter === 'sales') return contact.type === 'Sales Lead';
                         if (currentFilter === 'support') return contact.type === 'Support';
+                        if (currentFilter === 'assigned') return contact.user_id == data.current_user_id;
                         return true;
                     });
                 }
@@ -143,7 +144,7 @@ function loadContacts() {
                 
                 filteredContacts.forEach(function(contact) {
                     const fullName = (contact.title ? contact.title + ' ' : '') + contact.firstname + ' ' + contact.lastname;
-                    const typeBadgeClass = contact.type === 'Sales Lead' ? 'type-badge sales-lead' : 'type-badge support';
+                    const typeBadgeClass = contact.type === 'Sales Lead' ? 'type-badge lead' : 'type-badge support';
                     
                     html += '<tr>';
                     html += '<td>' + escapeHtml(fullName) + '</td>';

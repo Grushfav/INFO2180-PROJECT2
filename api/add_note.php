@@ -46,9 +46,31 @@ if ($row['user_id'] != $userId && $userRole !== 'Admin') {
     exit;
 }
 
-// Insert note
-$stmt = $conn->prepare("INSERT INTO notes (contact_id, comment, user_id) VALUES (?, ?, ?)");
-$stmt->bind_param('isi', $contact_id, $comment, $userId);
+// Prefer storing creator in `created_by` column. Fall back to `user_id` if necessary.
+$colCheck = $conn->prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='notes' AND (COLUMN_NAME='created_by' OR COLUMN_NAME='user_id')");
+$colCheck->execute();
+$colRes = $colCheck->get_result();
+$cols = [];
+while ($c = $colRes->fetch_assoc()) {
+    $cols[] = $c['COLUMN_NAME'];
+}
+$colCheck->close();
+
+$hasCreatedBy = in_array('created_by', $cols, true);
+$hasUserIdColumn = in_array('user_id', $cols, true);
+
+if ($hasCreatedBy) {
+    $stmt = $conn->prepare("INSERT INTO notes (contact_id, comment, created_by) VALUES (?, ?, ?)");
+    $stmt->bind_param('isi', $contact_id, $comment, $userId);
+} elseif ($hasUserIdColumn) {
+    // Backward compatibility: store in user_id if created_by not present
+    $stmt = $conn->prepare("INSERT INTO notes (contact_id, comment, user_id) VALUES (?, ?, ?)");
+    $stmt->bind_param('isi', $contact_id, $comment, $userId);
+} else {
+    $stmt = $conn->prepare("INSERT INTO notes (contact_id, comment) VALUES (?, ?)");
+    $stmt->bind_param('is', $contact_id, $comment);
+}
+
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Note added']);
 } else {

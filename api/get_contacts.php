@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT id, firstname, lastname, email, telephone, company, title, type, created_at FROM contacts WHERE user_id = ? ORDER BY created_at DESC");
-$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt = $conn->prepare("SELECT id, firstname, lastname, email, telephone, company, title, type, user_id, created_at FROM contacts ORDER BY created_at DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -25,6 +24,6 @@ while ($row = $result->fetch_assoc()) {
     $contacts[] = $row;
 }
 
-echo json_encode(['success' => true, 'contacts' => $contacts]);
+echo json_encode(['success' => true, 'contacts' => $contacts, 'current_user_id' => $_SESSION['user_id']]);
 $stmt->close();
 ?>

@@ -44,7 +44,30 @@ if ($row['user_id'] != $userId && $userRole !== 'Admin') {
 }
 
 // Fetch notes with author name
-$stmt = $conn->prepare("SELECT n.id, n.comment, n.created_at, CONCAT(u.firstname, ' ', u.lastname) as author FROM notes n LEFT JOIN Users u ON n.user_id = u.id WHERE n.contact_id = ? ORDER BY n.created_at DESC");
+// Check for creator columns: prefer `created_by`, fall back to `user_id`.
+$colCheck = $conn->prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='notes' AND (COLUMN_NAME='created_by' OR COLUMN_NAME='user_id')");
+$colCheck->execute();
+$colRes = $colCheck->get_result();
+$cols = [];
+while ($c = $colRes->fetch_assoc()) {
+    $cols[] = $c['COLUMN_NAME'];
+}
+$colCheck->close();
+
+$hasCreatedBy = in_array('created_by', $cols, true);
+$hasUserIdColumn = in_array('user_id', $cols, true);
+
+if ($hasCreatedBy) {
+    // Use created_by when available
+    $stmt = $conn->prepare("SELECT n.id, n.comment, n.created_at, COALESCE(CONCAT(u.firstname, ' ', u.lastname), 'Unknown') as author FROM notes n LEFT JOIN Users u ON n.created_by = u.id WHERE n.contact_id = ? ORDER BY n.created_at DESC");
+} elseif ($hasUserIdColumn) {
+    // Backward compatibility
+    $stmt = $conn->prepare("SELECT n.id, n.comment, n.created_at, COALESCE(CONCAT(u.firstname, ' ', u.lastname), 'Unknown') as author FROM notes n LEFT JOIN Users u ON n.user_id = u.id WHERE n.contact_id = ? ORDER BY n.created_at DESC");
+} else {
+    // No creator column; return Unknown
+    $stmt = $conn->prepare("SELECT n.id, n.comment, n.created_at, 'Unknown' as author FROM notes n WHERE n.contact_id = ? ORDER BY n.created_at DESC");
+}
+
 $stmt->bind_param('i', $contact_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -55,4 +78,5 @@ while ($r = $result->fetch_assoc()) {
 }
 
 echo json_encode(['success' => true, 'notes' => $notes]);
+$stmt->close();
 ?>

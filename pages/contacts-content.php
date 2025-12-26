@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <div class="page-header">
     <h2>New Contacts</h2>
-    <button class="btn-primary" onclick="showAddContactForm()">+ Add Contact</button>
+    <button id="toggle-view-btn" class="btn-primary" onclick="toggleContactsView()">View Contacts List</button>
 </div>
 
 <!-- <div class="filter-section">
@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) {
     <button class="filter-btn" onclick="filterContacts('assigned')">Assigned to me</button>
 </div> -->
 
-<div id="add-contact-form-container" class="add-contact-form-container hidden" >
+<div id="add-contact-form-container" class="add-contact-form-container">
     <h3>Add New Contact</h3>
     <form id="contact-form">
         <div class="form-row">
@@ -72,7 +72,7 @@ if (!isset($_SESSION['user_id'])) {
     <div id="contact-form-message" class="form-message hidden"></div>
 </div>
 
-<!-- <div class="contacts-container">
+<div class="contacts-container hidden">
     <table class="contacts-table">
         <thead>
             <tr>
@@ -89,7 +89,7 @@ if (!isset($_SESSION['user_id'])) {
             </tr>
         </tbody>
     </table>
-</div> -->
+</div>
 
 <script>
 window.currentFilter = window.currentFilter || 'all';
@@ -103,8 +103,32 @@ function hideAddContactForm() {
     $('#add-contact-form-container').slideUp(function() {
         $(this).addClass('hidden');
     });
+    $('#contacts-container').slideDown();
+    $('#toggle-view-btn').text('View Contacts List');
     $('#contact-form')[0].reset();
     $('#contact-form-message').addClass('hidden');
+}
+
+function toggleContactsView() {
+    const form = $('#add-contact-form-container');
+    const list = $('.contacts-container');
+    
+    if (form.hasClass('hidden')) {
+        // Show form, hide list
+        form.removeClass('hidden').slideDown();
+        list.slideUp(function() {
+            $(this).addClass('hidden');
+        });
+        $('#toggle-view-btn').text('View Contacts List');
+    } else {
+        // Hide form, show list
+        form.slideUp(function() {
+            $(this).addClass('hidden');
+        });
+        list.removeClass('hidden').slideDown();
+        loadContacts();
+        $('#toggle-view-btn').text('Add New Contact');
+    }
 }
 
 function filterContacts(filterType) {
@@ -132,6 +156,7 @@ function loadContacts() {
                     filteredContacts = data.contacts.filter(function(contact) {
                         if (currentFilter === 'sales') return contact.type === 'Sales Lead';
                         if (currentFilter === 'support') return contact.type === 'Support';
+                        if (currentFilter === 'assigned') return contact.user_id == data.current_user_id;
                         return true;
                     });
                 }
@@ -143,7 +168,7 @@ function loadContacts() {
                 
                 filteredContacts.forEach(function(contact) {
                     const fullName = (contact.title ? contact.title + ' ' : '') + contact.firstname + ' ' + contact.lastname;
-                    const typeBadgeClass = contact.type === 'Sales Lead' ? 'type-badge sales-lead' : 'type-badge support';
+                    const typeBadgeClass = contact.type === 'Sales Lead' ? 'type-badge lead' : 'type-badge support';
                     
                     html += '<tr>';
                     html += '<td>' + escapeHtml(fullName) + '</td>';
@@ -220,9 +245,7 @@ function escapeHtml(text) {
 }
 
 $(document).ready(function() {
-    // Ensure add contact form is hidden on load
-    $('#add-contact-form-container').stop(true, true).addClass('hidden');
-
+    // Load contacts in the background (they're hidden initially)
     loadContacts();
 
     $('#contact-form').submit(function(e) {
@@ -270,7 +293,10 @@ $(document).ready(function() {
 
                 // Reload contacts list
                 loadContacts();
-                hideAddContactForm();
+                // Show form, hide list
+                $('#add-contact-form-container').removeClass('hidden');
+                $('.contacts-container').addClass('hidden');
+                $('#toggle-view-btn').text('View Contacts List');
             },
             error: function(xhr) {
                 let errorMessage = 'Error adding contact';

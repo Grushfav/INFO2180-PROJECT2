@@ -31,18 +31,18 @@ CREATE TABLE IF NOT EXISTS `contacts` (
     CONSTRAINT `fk_contacts_user_id` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Notes table: stores comments linked to contacts
+-- Notes table: stores comments linked to contacts (tracks creator as created_by)
 CREATE TABLE IF NOT EXISTS `notes` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `contact_id` INT NOT NULL,
     `comment` TEXT NOT NULL,
-    `user_id` INT NOT NULL,
+    `created_by` INT DEFAULT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `idx_notes_contact_id` (`contact_id`),
-    KEY `idx_notes_user_id` (`user_id`),
+    KEY `idx_notes_created_by` (`created_by`),
     CONSTRAINT `fk_notes_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_notes_user_id` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT `fk_notes_created_by` FOREIGN KEY (`created_by`) REFERENCES `Users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
