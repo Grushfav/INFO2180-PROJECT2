@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) {
     <button class="filter-btn" onclick="filterContacts('assigned')">Assigned to me</button>
 </div>
 
-<div id="add-contact-form-container" class="add-contact-form-container hidden">
+<div id="add-contact-form-container" class="add-contact-form-container hidden" style="display: none !important;">
     <h3>Add New Contact</h3>
     <form id="contact-form">
         <div class="form-row">
@@ -165,7 +165,26 @@ function loadContacts() {
 }
 
 function viewContact(contactId) {
-    alert('Contact details view coming soon!');
+    // Load the contact detail fragment into the main content area
+    $.ajax({
+        url: 'pages/contact-detail.php',
+        method: 'GET',
+        data: { id: contactId },
+        dataType: 'html',
+        success: function(html) {
+            $('#content-area').html(html);
+            // Push to history so back button works
+            try {
+                window.history.pushState({page: 'contact', id: contactId}, 'Contact', '#contact-' + contactId);
+            } catch (e) {
+                console.warn('History pushState failed:', e);
+            }
+        },
+        error: function(xhr) {
+            alert('Error loading contact details');
+            console.error('Load contact detail error:', xhr.status, xhr.responseText);
+        }
+    });
 }
 
 function escapeHtml(text) {
@@ -180,6 +199,9 @@ function escapeHtml(text) {
 }
 
 $(document).ready(function() {
+    // Ensure add contact form is hidden on load
+    $('#add-contact-form-container').stop(true, true).addClass('hidden');
+
     loadContacts();
 
     $('#contact-form').submit(function(e) {
