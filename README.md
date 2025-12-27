@@ -1,6 +1,12 @@
 # Dolphin CRM - INFO2180 Project 2
 
-A professional Customer Relationship Management (CRM) system built with PHP, MySQL, JavaScript, jQuery, and AJAX. This project demonstrates full-stack web development with user authentication, CRUD operations, and role-based access control.
+A professional Customer Relationship Management 
+
+# Members 
+Gavin Seaton- 620043505
+Nathan Hansle- 620141592
+Tristan Martin- 620165414
+
 
 ## Features
 
@@ -25,15 +31,6 @@ A professional Customer Relationship Management (CRM) system built with PHP, MyS
 - Session-based authentication
 - Admin-only protected pages
 
-## Technology Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Backend | PHP 7.0+ with MySQLi |
-| Database | MySQL 5.7+ / MariaDB |
-| Frontend | HTML5, CSS3, JavaScript |
-| Libraries | jQuery 3.6.0, AJAX |
-| Architecture | RESTful API with JSON responses |
 
 ## Project Structure
 
@@ -64,30 +61,27 @@ INFO2180-PROJECT2/
 
 ## Setup Instructions
 
-### 1. Prerequisites
-- XAMPP (Apache 2.4+, PHP 7.0+, MySQL 5.7+) or equivalent
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-
-### 2. Database Setup
+### 1. Database Setup
 
 The database is created automatically during import. Run this command in PowerShell:
-
-```powershell
-& 'C:\xampp\mysql\bin\mysql.exe' -u root dolphin_crm -e "SOURCE c:/xampp/htdocs/INFO2180-PROJECT2/schema.sql;"
-```
+Edit `config.php` if needed (defaults work for XAMPP):
+```php
+define('DB_HOST', 'localhost');
+define('DB_USER', 'admin_project2');
+define('DB_PASSWORD', 'Password123');
+define('DB_NAME', 'dolphin_crm');
 
 Or, create manually in phpMyAdmin:
 1. Create database: `dolphin_crm`
 2. Import `schema.sql` via phpMyAdmin SQL tab
 
-### 3. Configuration
-
-Edit `config.php` if needed (defaults work for XAMPP):
-```php
-define('DB_HOST', 'localhost');    // MySQL host
-define('DB_USER', 'root');         // MySQL username
-define('DB_PASSWORD', '');         // MySQL password (XAMPP default: empty)
-define('DB_NAME', 'dolphin_crm');  // Database name
+### 2. Database Setup
+Copy and Paste SQL script from schema.sql to get started
+-- Insert an admin user (example)
+---The password below is 'adminpass' hashed using bcrypt-  password: password123
+INSERT INTO `Users` (`firstname`, `lastname`, `email`, `password`, `role`)
+VALUES ('Admin', 'User', 'admin@project2.com', '$2y$10$yQ1ktDd.16eHW.uTDuxcGOcDzD40gdAHirPwxk9Lefa.7cNquOOAG', 'Admin')
+ON DUPLICATE KEY UPDATE `email` = `email`;
 ```
 
 ### 4. Start Application
@@ -102,12 +96,6 @@ define('DB_NAME', 'dolphin_crm');  // Database name
 - Email: `admin@project2.com`
 - Password: `password123`
 
-## Usage Guide
-
-### Logging In
-1. Open `http://localhost/INFO2180-PROJECT2/login.php`
-2. Enter email and password
-3. On successful login, you'll see the dashboard
 
 ### Admin Features
 
@@ -133,6 +121,7 @@ define('DB_NAME', 'dolphin_crm');  // Database name
    - Email address
    - Role (color-coded: Admin=blue, Member=orange)
    - Created date and time
+
 
 ### Contact Management
 
@@ -161,7 +150,7 @@ define('DB_NAME', 'dolphin_crm');  // Database name
 
 All endpoints require authentication via `$_SESSION['user_id']`. Some endpoints require admin role.
 
-### Users Endpoints
+### Users Endpoints Example
 
 #### GET `/api/get_users.php`
 **Access:** Admin only  
@@ -202,36 +191,7 @@ All endpoints require authentication via `$_SESSION['user_id']`. Some endpoints 
 }
 ```
 
-### Contact Endpoints
 
-#### GET `/api/get_contacts.php`
-**Access:** Authenticated users  
-**Returns:** All contacts
-
-#### POST `/api/add_contact.php`
-**Access:** Authenticated users  
-**Parameters:**
-- `firstname` (required)
-- `lastname` (required)
-- `email` (required, unique)
-- `title` (optional)
-- `telephone` (optional)
-- `company` (optional)
-- `type` (required: 'Client' or 'Lead')
-
-#### GET `/api/get_contact.php?id={id}`
-**Access:** Authenticated users  
-**Returns:** Single contact with notes
-
-#### POST `/api/delete_contact.php`
-**Access:** Authenticated users  
-**Parameters:** `id`
-
-#### POST `/api/add_note.php`
-**Access:** Authenticated users  
-**Parameters:**
-- `contact_id`
-- `comment`
 
 ## Database Schema
 
@@ -276,16 +236,6 @@ CREATE TABLE Notes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-
-## Security Features
-
-✅ **Password Hashing** — Uses PHP's `password_hash()` with bcrypt  
-✅ **Session-Based Auth** — Secure user identification  
-✅ **Prepared Statements** — SQL injection prevention  
-✅ **Input Validation** — Both client and server-side  
-✅ **Role-Based Access** — Admin-only protected features  
-✅ **Input Sanitization** — HTML escaping and data filtering  
-
 ## File Descriptions
 
 | File | Purpose |
@@ -301,47 +251,8 @@ CREATE TABLE Notes (
 | `js/login.js` | Login form interactions |
 | `js/new_user.js` | User form validation & AJAX |
 
-## Troubleshooting
 
-### Connection Error on Login
-**Problem:** "Connection failed"  
-**Solution:**
-- Verify MySQL is running in XAMPP
-- Check `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` in `config.php`
-- Ensure database `dolphin_crm` exists
-- Run: `& 'C:\xampp\mysql\bin\mysql.exe' -u root -e "SHOW DATABASES;"`
 
-### Login Fails with Valid Credentials
-**Problem:** "Invalid email or password"  
-**Solution:**
-- Check that admin user exists: `SELECT * FROM Users;`
-- Verify password: `admin@project2.com` / `password123`
-- Admin user is auto-inserted via `schema.sql`
-
-### Users Page Shows "Forbidden"
-**Problem:** Can't access `users.php` as admin  
-**Solution:**
-- Ensure you're logged in as Admin role
-- Check `$_SESSION['user_role']` is set to 'Admin'
-- Verify your user record has `role = 'Admin'` in database
-
-### Password Validation Fails
-**Problem:** "Password must be at least 8 characters..."  
-**Solution:**
-- Ensure password meets requirements:
-  - Minimum 8 characters
-  - At least one uppercase letter (A-Z)
-  - At least one lowercase letter (a-z)
-  - At least one digit (0-9)
-- Example valid password: `MyPassword123`
-
-### AJAX Requests Fail
-**Problem:** Forms don't submit or errors in console  
-**Solution:**
-- Open browser console (F12)
-- Check API endpoint URLs in Network tab
-- Verify API files exist in `api/` folder
-- Ensure you're logged in (check session)
 
 ## Advanced Features (Future Enhancements)
 
@@ -356,42 +267,6 @@ CREATE TABLE Notes (
 - [ ] Password change functionality
 - [ ] Account settings page
 
-## Browser Compatibility
-
-| Browser | Support |
-|---------|---------|
-| Chrome 90+ | ✅ Full support |
-| Firefox 88+ | ✅ Full support |
-| Safari 14+ | ✅ Full support |
-| Edge 90+ | ✅ Full support |
-| IE 11 | ⚠️ Limited support |
-
-## Performance Notes
-
-- Database uses InnoDB engine for ACID compliance
-- Indexes on foreign keys for faster queries
-- UTF-8MB4 charset for international characters
-- Prepared statements to prevent SQL injection
-- AJAX for seamless user experience without page reloads
-
-## Maintenance
-
-### Regular Tasks
-- Monitor database size with `SELECT table_schema, ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) FROM information_schema.tables WHERE table_schema='dolphin_crm' GROUP BY table_schema;`
-- Backup database regularly: `mysqldump -u root dolphin_crm > backup.sql`
-- Review user logs for suspicious activity
-- Keep MySQL and PHP updated
-
-### Creating Additional Admin Users
-
-Use the `new_user.php` form while logged in as Admin, or SQL:
-
-```sql
-INSERT INTO Users (firstname, lastname, email, password, role) VALUES 
-('John', 'Doe', 'john@example.com', PASSWORD_HASH('SecurePass123'), 'Admin');
-```
-
-(Use `password_hash()` in PHP or a tool to generate the bcrypt hash)
 
 ## Support & Documentation
 
@@ -400,11 +275,6 @@ INSERT INTO Users (firstname, lastname, email, password, role) VALUES
 - **API Responses** — All endpoints return JSON with success/error status
 - **Browser Console** — (F12) Shows AJAX request details for debugging
 
-## License
-
-Educational Use Only - INFO2180 Project 2
-
-## Author
 
 Created for INFO2180 Course Project 2 (Dec 2025)
 

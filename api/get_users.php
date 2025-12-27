@@ -17,20 +17,27 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'Admin') {
     exit();
 }
 
-// Get all users
-$query = "SELECT id, CONCAT(firstname, ' ', lastname) as fullname, email, role, created_at FROM Users ORDER BY created_at DESC";
-$result = $conn->query($query);
-
-if (!$result) {
+// Get all users using prepared statement for consistency
+$stmt = $conn->prepare("SELECT id, CONCAT(firstname, ' ', lastname) as fullname, email, role, created_at FROM Users ORDER BY created_at DESC");
+if (!$stmt) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    echo json_encode(['error' => 'Database prepare failed: ' . $conn->error]);
     exit();
 }
 
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error: ' . $stmt->error]);
+    $stmt->close();
+    exit();
+}
+
+$result = $stmt->get_result();
 $users = [];
 while ($row = $result->fetch_assoc()) {
     $users[] = $row;
 }
+$stmt->close();
 
 // Return under the key 'users' to match frontend expectations
 echo json_encode(['success' => true, 'users' => $users]);

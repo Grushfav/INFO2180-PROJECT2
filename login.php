@@ -29,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (password_verify($password, $user['password'])) {
                 // Password is hashed (correct way)
                 $passwordValid = true;
-            } elseif ($password === $user['password']) {
-                // Password is plain text (for legacy/initial setup)
-                $passwordValid = true;
+            // } elseif ($password === $user['password']) {
+            //     // Password is plain text (for legacy/initial setup)
+            //     $passwordValid = true;
             }
             
             if ($passwordValid) {

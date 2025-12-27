@@ -15,11 +15,7 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
     <h2>Contact Details</h2>
     <div class="detail-actions">
         <button id="assign-me-btn" class="btn-primary">Assign to me</button>
-        <select id="switch-type-select" class="form-group">
-            <option value="">-- Change type --</option>
-            <option value="Sales Lead">Sales Lead</option>
-            <option value="Support">Support</option>
-        </select>
+        <button id="toggle-type-btn" class="btn-secondary">Switch Type</button>
         <button id="back-to-list" class="btn-secondary">Back</button>
     </div>
 </div>
@@ -56,6 +52,7 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 <script>
     (function() {
         const contactId = <?php echo $contactId; ?>;
+        let currentContactType = '';
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -82,13 +79,21 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                     }
 
                     const c = res.contact;
+                    currentContactType = c.type;
                     const fullName = (c.title ? c.title + ' ' : '') + c.firstname + ' ' + c.lastname;
                     $('#contact-name').text(fullName);
                     $('#contact-title').text(c.title || '');
                     $('#contact-email').text(c.email || '-');
                     $('#contact-telephone').text(c.telephone || '-');
                     $('#contact-company').text(c.company || '-');
-                    $('#contact-type').text(c.type || '-');
+                    
+                    // Display contact type with badge styling
+                    const typeBadgeClass = c.type === 'Sales Lead' ? 'type-badge lead' : 'type-badge support';
+                    $('#contact-type').html('<span class="' + typeBadgeClass + '">' + escapeHtml(c.type || '-') + '</span>');
+                    
+                    // Update switch type button text dynamically
+                    updateSwitchTypeButton(c.type);
+                    
                     $('#contact-assigned').text(c.owner_fullname || '-');
                     $('#contact-created').text(c.created_at || '-');
                     $('#contact-updated').text(c.updated_at || '-');
@@ -135,10 +140,11 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
         // Assign to me
         $('#assign-me-btn').on('click', function() {
+            const data = { action: 'assign', id: contactId };
             $.ajax({
                 url: 'api/update_contact.php',
                 method: 'POST',
-                data: { action: 'assign', id: contactId },
+                data: data,
                 dataType: 'json',
                 success: function(res) {
                     if (res.success) {
@@ -154,29 +160,6 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
             });
         });
 
-        // Switch type
-        $('#switch-type-select').on('change', function() {
-            const newType = $(this).val();
-            if (!newType) return;
-            $.ajax({
-                url: 'api/update_contact.php',
-                method: 'POST',
-                data: { action: 'switch_type', id: contactId, type: newType },
-                dataType: 'json',
-                success: function(res) {
-                    if (res.success) {
-                        loadContact();
-                    } else {
-                        alert('Error: ' + (res.error || 'Unable to change type'));
-                    }
-                },
-                error: function(xhr) {
-                    alert('Error changing type');
-                    console.error('switch_type error', xhr.status, xhr.responseText);
-                }
-            });
-        });
-
         // Back button
         $('#back-to-list').on('click', function() {
             try {
@@ -185,6 +168,18 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                 loadPage('contacts');
             }
         });
+
+        // Switch type button
+        $('#toggle-type-btn').on('click', function() {
+            toggleContactType();
+        });
+
+
+        // Function to update switch type button text
+        function updateSwitchTypeButton(currentType) {
+            const newType = currentType === 'Sales Lead' ? 'Support' : 'Sales Lead';
+            $('#toggle-type-btn').text('Switch to ' + newType);
+        }
 
         // Add note
         $('#add-note-form').on('submit', function(e) {
@@ -226,6 +221,59 @@ $contactId = isset($_GET['id']) ? intval($_GET['id']) : 0;
             loadNotes();
         });
     })();
+
+    // Global function to toggle contact type
+    function toggleContactType() {
+        const contactId = <?php echo intval($contactId); ?>;
+        const currentTypeElement = document.getElementById('contact-type');
+        if (!currentTypeElement) {
+            alert('Error: Could not determine current contact type');
+            return;
+        }
+        
+        // Get the text content, handling both plain text and badge spans
+        let currentType = currentTypeElement.textContent.trim();
+        // If it's in a badge, extract just the type text
+        const badgeSpan = currentTypeElement.querySelector('.type-badge');
+        if (badgeSpan) {
+            currentType = badgeSpan.textContent.trim();
+        }
+        
+        const newType = currentType === 'Sales Lead' ? 'Support' : 'Sales Lead';
+        
+        $.ajax({
+            url: 'api/update_contact.php',
+            method: 'POST',
+            data: { action: 'switch_type', id: contactId, type: newType },
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    // Reload contact data to update the display
+                    // This will also update the button text via the loadContact callback
+                    const typeEl = document.getElementById('contact-type');
+                    if (typeEl) {
+                        // Update the type display immediately
+                        const typeBadgeClass = newType === 'Sales Lead' ? 'type-badge lead' : 'type-badge support';
+                        typeEl.innerHTML = '<span class="' + typeBadgeClass + '">' + newType + '</span>';
+                        
+                        // Update button text
+                        const nextType = newType === 'Sales Lead' ? 'Support' : 'Sales Lead';
+                        $('#toggle-type-btn').text('Switch to ' + nextType);
+                    }
+                    
+                    // Reload full contact to ensure consistency
+                    loadContact();
+                } else {
+                    alert('Error: ' + (res.error || 'Unable to change type'));
+                }
+            },
+            error: function(xhr) {
+                alert('Error changing type');
+                console.error('switch_type error', xhr.status, xhr.responseText);
+            }
+        });
+    }
+
 </script>
 
 

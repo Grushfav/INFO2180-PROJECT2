@@ -152,7 +152,10 @@ function loadContacts() {
                     html += '<td>' + escapeHtml(contact.email) + '</td>';
                     html += '<td>' + escapeHtml(contact.company || '-') + '</td>';
                     html += '<td><span class="' + typeBadgeClass + '">' + escapeHtml(contact.type) + '</span></td>';
-                    html += '<td class="action-cell"><button class="btn-view" onclick="viewContact(' + contact.id + ')">View</button></td>';
+                    html += '<td class="action-cell">';
+                    html += '<button class="btn-view" onclick="viewContact(' + contact.id + ')">View</button> ';
+                    html += '<button class="btn-delete" onclick="deleteContact(' + contact.id + ')">Delete</button>';
+                    html += '</td>';
                     html += '</tr>';
                 });
                 $('#contacts-list').html(html);
@@ -187,6 +190,27 @@ function viewContact(contactId) {
             console.error('Load contact detail error:', xhr.status, xhr.responseText);
         }
     });
+}
+
+function deleteContact(contactId) {
+    if (confirm('Are you sure you want to delete this contact?')) {
+        $.ajax({
+            url: 'api/delete_contact.php',
+            method: 'POST',
+            data: {id: contactId},
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    loadContacts();
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function() {
+                alert('Error deleting contact');
+            }
+        });
+    }
 }
 
 function escapeHtml(text) {

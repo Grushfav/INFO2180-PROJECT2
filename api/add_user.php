@@ -24,6 +24,7 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'Admin') {
     exit();
 }
 
+// Get input from POST or JSON
 $firstname = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
 $lastname  = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
 $email     = isset($_POST['email']) ? trim($_POST['email']) : '';
@@ -43,10 +44,24 @@ if (strpos($contentType, 'application/json') !== false) {
     }
 }
 
+// Sanitize text fields (strip HTML tags and encode special characters)
+$firstname = htmlspecialchars(strip_tags($firstname), ENT_QUOTES, 'UTF-8');
+$lastname = htmlspecialchars(strip_tags($lastname), ENT_QUOTES, 'UTF-8');
+
 $errors = [];
 if ($firstname === '') $errors[] = 'First name is required';
 if ($lastname === '')  $errors[] = 'Last name is required';
-if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Valid email is required';
+if ($email === '') $errors[] = 'Email is required';
+
+// Validate field lengths (matching database schema)
+if (strlen($firstname) > 50) $errors[] = 'First name must be 50 characters or less';
+if (strlen($lastname) > 50) $errors[] = 'Last name must be 50 characters or less';
+if (strlen($email) > 100) $errors[] = 'Email must be 100 characters or less';
+
+// Validate email format
+if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Valid email is required';
+}
 
 // Password rules: at least 8 chars, at least one uppercase, one lowercase, one digit
 $pwPattern = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$/';

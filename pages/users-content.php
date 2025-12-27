@@ -117,9 +117,9 @@ function loadUsers() {
                     html += '<tr>';
                     html += '<td>' + escapeHtml(user.fullname) + '</td>';
                     html += '<td>' + escapeHtml(user.email) + '</td>';
-                    html += '<td><span class="' + roleClass + '">' + user.role + '</span></td>';
+                    html += '<td><span class="' + roleClass + '">' + escapeHtml(user.role) + '</span></td>';
                     html += '<td>' + createdDate + '</td>';
-                    html += '<td class="action-cell"><button class="btn-delete" onclick="deleteUser(' + user.id + ')">Delete</button></td>';
+                    html += '<td class="action-cell"><button class="btn-delete" data-user-id="' + escapeHtml(String(user.id)) + '" onclick="deleteUser(' + parseInt(user.id) + ')">Delete</button></td>';
                     html += '</tr>';
                 });
                 $('#users-list').html(html);

@@ -168,7 +168,10 @@ function loadContacts() {
                     html += '<td>' + escapeHtml(contact.email) + '</td>';
                     html += '<td>' + escapeHtml(contact.company || '-') + '</td>';
                     html += '<td><span class="' + typeBadgeClass + '">' + escapeHtml(contact.type) + '</span></td>';
-                    html += '<td class="action-cell"><button class="btn-view" onclick="viewContact(' + contact.id + ')">View</button></td>';
+                    html += '<td class="action-cell">';
+                    html += '<button class="btn-view" onclick="viewContact(' + contact.id + ')">View</button> ';
+                    html += '<button class="btn-delete" onclick="deleteContact(' + contact.id + ')">Delete</button>';
+                    html += '</td>';
                     html += '</tr>';
                 });
                 $('#contacts-list').html(html);

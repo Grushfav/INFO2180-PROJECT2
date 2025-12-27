@@ -18,9 +18,25 @@ $input = json_decode(file_get_contents('php://input'), true);
 $contact_id = isset($input['contact_id']) ? intval($input['contact_id']) : (isset($_POST['contact_id']) ? intval($_POST['contact_id']) : 0);
 $comment = isset($input['comment']) ? trim($input['comment']) : (isset($_POST['comment']) ? trim($_POST['comment']) : '');
 
-if ($contact_id <= 0 || $comment === '') {
+// Validate required fields
+if ($contact_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'contact_id and comment are required']);
+    echo json_encode(['success' => false, 'error' => 'contact_id is required']);
+    exit;
+}
+
+if ($comment === '') {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Comment is required']);
+    exit;
+}
+
+// Sanitize comment (strip HTML tags, but preserve line breaks for notes)
+$comment = strip_tags($comment);
+// Limit comment length (TEXT field in MySQL can be large, but we'll limit to 65535 chars)
+if (strlen($comment) > 65535) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Comment is too long. Maximum 65535 characters allowed']);
     exit;
 }
 

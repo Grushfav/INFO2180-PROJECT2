@@ -483,6 +483,14 @@ body {
     text-align: right;
 }
 
+.action-cell button {
+    margin-left: var(--spacing-sm);
+}
+
+.action-cell button:first-child {
+    margin-left: 0;
+}
+
 /* ========== BADGES ========== */
 .type-badge {
     display: inline-block;
@@ -603,10 +611,12 @@ body {
 
 #assign-me-btn,
 #back-to-list,
-#switch-type-select {
+#toggle-type-btn,
+#delete-contact-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 #assign-me-btn {
@@ -627,6 +637,27 @@ body {
 
 #back-to-list:hover {
     background-color: var(--color-button-secondary-hover);
+}
+
+#toggle-type-btn {
+    background-color: var(--color-button-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid #bdc3c7;
+}
+
+#toggle-type-btn:hover {
+    background-color: var(--color-button-secondary-hover);
+}
+
+#delete-contact-btn {
+    background-color: var(--color-error);
+    color: var(--color-bg-primary);
+    border: none;
+}
+
+#delete-contact-btn:hover {
+    background-color: #b71c1c;
+    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
 }
 
 #switch-type-select {
@@ -678,6 +709,16 @@ body {
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
     margin-top: -4px;
+}
+
+/* Contact type badge in detail view */
+.contact-meta #contact-type {
+    display: inline-block;
+    margin-left: var(--spacing-xs);
+}
+
+.contact-meta #contact-type .type-badge {
+    margin: 0;
 }
 
 /* Notes Section */
