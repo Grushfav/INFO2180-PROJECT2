@@ -45,10 +45,10 @@ if (!isset($_SESSION['user_id'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Load home page on page load
+           
             loadPage('home');
 
-            // Handle back/forward browser buttons
+            
             window.addEventListener('popstate', function(event) {
                 if (event.state && event.state.page) {
                     loadPageContent(event.state.page, false);
@@ -57,18 +57,18 @@ if (!isset($_SESSION['user_id'])) {
         });
 
         function loadPage(page) {
-            // Update active nav link
+            
             $('.nav-link').removeClass('active');
             $('[data-page="' + page + '"]').addClass('active');
 
-            // Load content
+           
             loadPageContent(page, true);
         }
 
         function loadPageContent(page, pushState = true) {
             let contentUrl = '';
             
-            // Map pages to their PHP content files
+           
             switch(page) {
                 case 'home':
                     contentUrl = 'pages/home-content.php';
@@ -90,7 +90,7 @@ if (!isset($_SESSION['user_id'])) {
                 success: function(html) {
                     $('#content-area').html(html);
                     
-                    // Push state to browser history for back button support
+                  
                     if (pushState) {
                         window.history.pushState({page: page}, page, '#' + page);
                     }

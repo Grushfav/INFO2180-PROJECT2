@@ -2,10 +2,10 @@
 
 A professional Customer Relationship Management 
 
-# Members 
-Gavin Seaton- 620043505
-Nathan Hansle- 620141592
-Tristan Martin- 620165414
+# Group Members
+- Gavin Seaton- 620043505
+- Nathan Hansle- 620141592
+- Tristan Martin- 620165414
 
 
 ## Features
@@ -31,6 +31,19 @@ Tristan Martin- 620165414
 - Session-based authentication
 - Admin-only protected pages
 
+### Stapshot 
+# Login Page
+![Alt text](./css/Photos/image_11.png)
+# Dashboard Page
+![Alt text](./css/Photos/image_6.png)
+# Manage Users Page
+![Alt text](./css/Photos/image_10.png)
+# New Contact Page
+![Alt text](./css/Photos/image_9.png)
+# Contact Detail Page
+![Alt text](./css/Photos/image_8.png)
+
+
 
 ## Project Structure
 
@@ -42,7 +55,6 @@ INFO2180-PROJECT2/
 ├── users.php                     # Admin-only users list page
 ├── new_user.php                  # Admin-only new user form
 ├── logout.php                    # Session cleanup and logout
-├── hash_gen.php                  # Utility to generate password hashes
 ├── schema.sql                    # Database schema (MySQL-compatible)
 ├── api/
 │   ├── get_users.php            # Get all users (admin-only)
@@ -251,21 +263,6 @@ CREATE TABLE Notes (
 | `js/login.js` | Login form interactions |
 | `js/new_user.js` | User form validation & AJAX |
 
-
-
-
-## Advanced Features (Future Enhancements)
-
-- [ ] Contact search and filtering
-- [ ] Edit contact functionality
-- [ ] Export contacts to CSV
-- [ ] Contact assignment to users
-- [ ] Email notifications
-- [ ] Advanced user permissions
-- [ ] Contact activity timeline
-- [ ] User profile management
-- [ ] Password change functionality
-- [ ] Account settings page
 
 
 ## Support & Documentation

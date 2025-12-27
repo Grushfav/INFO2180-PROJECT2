@@ -1,9 +1,4 @@
-/* ============================================================================
-   DOLPHIN CRM - STYLESHEET
-   Best Practices: SMACSS structure, semantic naming, DRY principles
-   ============================================================================ */
 
-/* ========== CSS VARIABLES (Design Tokens) ========== */
 :root {
     /* Colors - Primary Brand */
     --color-primary: #5b7adb;
